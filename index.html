@@ -1,0 +1,146 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Analysis Blog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white p-4 sticky top-0 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Data Analysis Blog</h1>
+            <ul class="flex space-x-6">
+                <li><a href="#home" class="hover:underline">Home</a></li>
+                <li><a href="#about" class="hover:underline">About</a></li>
+                <li><a href="#contact" class="hover:underline">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="bg-white py-16">
+        <div class="container mx-auto text-center">
+            <h2 class="text-4xl font-bold mb-4">Welcome to My Data Analysis Blog</h2>
+            <p class="text-lg text-gray-600 mb-8">Showcasing insights, projects, and tips in data analysis</p>
+            <a href="#posts" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">View Posts</a>
+        </div>
+    </section>
+
+    <!-- Blog Posts Section -->
+    <section id="posts" class="py-16">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-12">Recent Posts</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="blog-posts">
+                <!-- Blog Post Card -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold mb-2">Analyzing Sales Data with Python</h3>
+                    <p class="text-gray-600 mb-4">A deep dive into cleaning and visualizing sales data using Pandas and Matplotlib.</p>
+                    <p class="text-sm text-gray-500 mb-4">Posted on May 10, 2025</p>
+                    <a href="#" class="text-blue-600 hover:underline">Read More</a>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold mb-2">Predictive Modeling with Scikit-Learn</h3>
+                    <p class="text-gray-600 mb-4">Building a machine learning model to predict customer churn.</p>
+                    <p class="text-sm text-gray-500 mb-4">Posted on May 5, 2025</p>
+                    <a href="#" class="text-blue-600 hover:underline">Read More</a>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold mb-2">SQL for Data Analysis</h3>
+                    <p class="text-gray-600 mb-4">Writing efficient SQL queries to extract insights from large datasets.</p>
+                    <p class="text-sm text-gray-500 mb-4">Posted on April 28, 2025</p>
+                    <a href="#" class="text-blue-600 hover:underline">Read More</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="bg-gray-200 py-16">
+        <div class="container mx-auto text-center">
+            <h2 class="text-3xl font-bold mb-8">About Me</h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-6">
+                I'm a passionate data analyst with expertise in Python, SQL, and machine learning. 
+                This blog is where I share my projects, tutorials, and insights to help others learn and grow in data analysis.
+            </p>
+            <a href="https://linkedin.com" target="_blank" class="text-blue-600 hover:underline">Connect Religion
+            <svg class="inline h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 3.999c-3.315 0-6 2.685-6 6s2.685 6 6 6 6-2.685 6-6-2.685-6-6-6zm0 1.5a4.5 4.5 0 014.5 4.5A4.5 4.5 0 0110 14.499A4.5 4.5 0 015.5 10 4.5 4.5 0 0110 5.499zm-1.5 1.5a3 3 0 00-3 3 3 3 0 003 3 3 3 0 003-3 3 3 0 00-3-3zm0 1.5a1.5 1.5 0 011.5 1.5A1.5 1.5 0 0110 11.999a1.5 1.5 0 01-1.5-1.5A1.5 1.5 0 0110 8.999zm0-1.5a3 3 0 00-3 3 3 3 0 003 3 3 3 0 003-3 3 3 0 00-3-3z" clip-rule="evenodd" />
+            </svg>Connect on LinkedIn</a>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16">
+        <div class="container mx-auto text-center">
+            <h2 class="text-3xl font-bold mb-8">Get in Touch</h2>
+            <p class="text-lg text-gray-600 mb-6">Interested in collaborating or have questions about data analysis? Reach out!</p>
+            <div class="max-w-md mx-auto">
+                <input type="text" placeholder="Your Name" class="w-full p-3 mb-4 border rounded-lg">
+                <input type="email" placeholder="Your Email" class="w-full p-3 mb-4 border rounded-lg">
+                <textarea placeholder="Your Message" class="w-full p-3 mb-4 border rounded-lg" rows="5"></textarea>
+                <button class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">Send Message</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-blue-600 text-white py-4">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2025 Data Analysis Blog. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
